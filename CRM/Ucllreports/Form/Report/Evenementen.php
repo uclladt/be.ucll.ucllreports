@@ -23,7 +23,7 @@ class CRM_Ucllreports_Form_Report_Evenementen extends CRM_Report_Form {
           'price' => array(
             'title' => 'Prijsset',
             'required' => TRUE,
-            'dbAlias' => 'group_concat(psfv.label)'
+            'dbAlias' => "group_concat(concat(psfv.label, ' (', floor(psfv.amount)), ' EUR)')"
           ),
         ),
         'order_bys' => array(
@@ -41,16 +41,6 @@ class CRM_Ucllreports_Form_Report_Evenementen extends CRM_Report_Form {
               'from' => date('m/d/Y', time() - (86400 * 2)), // current date - 2 days
               'to' => date('m/d/Y', time() + (86400 * 365)), // current date + 365 days
             ),
-          ),
-        ),
-      ),
-      'civicrm_participant' => array(
-        'dao' => 'CRM_Event_DAO_Participant',
-        'fields' => array(
-          'participant_count' => array(
-            'title' => 'Aantal deelnemers',
-            'required' => TRUE,
-            'dbAlias' => 'count(participant_civireport.id)',
           ),
         ),
       ),
@@ -76,10 +66,6 @@ class CRM_Ucllreports_Form_Report_Evenementen extends CRM_Report_Form {
         civicrm_price_field psf on psf.price_set_id = ps.id
       left outer join
         civicrm_price_field_value psfv on psfv.price_field_id = psf.id
-			LEFT OUTER JOIN
-				civicrm_participant {$this->_aliases['civicrm_participant']}
-			ON
-				{$this->_aliases['civicrm_participant']}.status_id not in (4,17,19,20,21) AND {$this->_aliases['civicrm_participant']}.event_id = {$this->_aliases['civicrm_event']}.id
 		";
   }
 
